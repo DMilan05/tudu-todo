@@ -31,7 +31,29 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="main.c">
+		<Unit filename="include/controller.h" />
+		<Unit filename="include/io.h" />
+		<Unit filename="include/model.h" />
+		<Unit filename="include/view.h" />
+		<Unit filename="src/controller.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/extras.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/io.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/model.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/search.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/view.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions />
