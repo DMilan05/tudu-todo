@@ -1,6 +1,9 @@
-#ifndef CONTROLLER_H_INCLUDED
-#define CONTROLLER_H_INCLUDED
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
+#include <gtk/gtk.h>
+#include "view.h"
 
+void controller_connect_signals(ViewWidgets *vw);
 
-#endif // CONTROLLER_H_INCLUDED
+#endif
