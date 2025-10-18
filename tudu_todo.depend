@@ -7,7 +7,8 @@
 
 1760552600 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\io.c
 
-1760552958 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\model.c
+1760789691 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\model.c
+	"model.h"
 
 1760552622 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\search.c
 
@@ -3509,4 +3510,7 @@
 	<gtk/gtk.h>
 	"view.h"
 	"controller.h"
+
+1760789690 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\model.h
+	<gtk/gtk.h>
 
