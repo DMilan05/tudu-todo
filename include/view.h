@@ -3,13 +3,15 @@
 
 #include <gtk/gtk.h>
 
-typedef struct {
+typedef struct
+{
     GtkWidget *window;
     GtkWidget *list;
     GtkWidget *add_btn;
     GtkWidget *del_btn;
+    GtkWidget *file_add_btn;
 } ViewWidgets;
 
-ViewWidgets* view_create_main_window(GtkApplication *app);
+ViewWidgets *view_create_main_window(GtkApplication *app);
 
 #endif

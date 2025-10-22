@@ -1,6 +1,7 @@
 #include "view.h"
 
-ViewWidgets* view_create_main_window(GtkApplication *app) {
+ViewWidgets *view_create_main_window(GtkApplication *app)
+{
     ViewWidgets *vw = g_new(ViewWidgets, 1);
     vw->window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(vw->window), "TUDU TODO");
@@ -19,8 +20,10 @@ ViewWidgets* view_create_main_window(GtkApplication *app) {
     gtk_box_append(GTK_BOX(vbox), hbox);
     vw->add_btn = gtk_button_new_with_label("Uj feladat");
     vw->del_btn = gtk_button_new_with_label("Torles");
+    vw->file_add_btn = gtk_button_new_with_label("Fájl");
     gtk_box_append(GTK_BOX(hbox), vw->add_btn);
     gtk_box_append(GTK_BOX(hbox), vw->del_btn);
+    gtk_box_append(GTK_BOX(hbox), vw->file_add_btn);
 
     return vw;
 }
