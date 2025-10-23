@@ -1,6 +1,7 @@
 # depslib dependency file v1.0
-1760789124 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\controller.c
+1760790344 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\controller.c
 	"controller.h"
+	"model.h"
 	"view.h"
 
 1760552653 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\extras.c
@@ -15,7 +16,7 @@
 1760789072 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\view.c
 	"view.h"
 
-1760789082 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\view.h
+1760891554 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\view.h
 	<gtk/gtk.h>
 
 1752524157 c:\msys64\ucrt64\include\gtk-4.0\gtk\gtk.h

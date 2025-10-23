@@ -1,72 +1,91 @@
 #include "controller.h"
 #include "model.h"
 #include "view.h"
+#include <string.h>
 
-static TodoModel *model = NULL;
+// --- Hozzáadás gomb esemény ---
+static void on_add_clicked(GtkButton *button, gpointer user_data) {
+    (void)button; // warning elkerülése
 
-// --- CALLBACK: Feladat hozz�ad�sa ---
-static void on_add_response(GtkButton *button, gpointer user_data) {
-    ViewWidgets *vw = user_data;
-    GtkWidget *dialog = gtk_widget_get_ancestor(GTK_WIDGET(button), GTK_TYPE_WINDOW);
+    AppData *app = (AppData*) user_data;
+    ViewWidgets *vw = app->view;
+    Model *model = app->model;
 
-    GtkWidget *entry = g_object_get_data(G_OBJECT(dialog), "entry");
-    const char *text = gtk_editable_get_text(GTK_EDITABLE(entry));
+    GtkWidget *dialog = gtk_dialog_new_with_buttons(
+        "Új feladat",
+        GTK_WINDOW(vw->window),
+        GTK_DIALOG_MODAL,
+        "_Mégse", GTK_RESPONSE_CANCEL,
+        "_Hozzáadás", GTK_RESPONSE_OK,
+        NULL
+    );
 
-    if (text && *text) {
-        model_add_item(model, text);
-        model_refresh_list(model, GTK_LIST_BOX(vw->list));
+    GtkWidget *content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+    GtkWidget *entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Feladat neve...");
+    gtk_box_append(GTK_BOX(content), entry);
+
+    gint result = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (result == GTK_RESPONSE_OK) {
+        const char *text = gtk_entry_get_text(GTK_ENTRY(entry));
+        if (strlen(text) > 0) {
+            // Csak a címet és az állapotot adja át. A státusz mindig STATUS_PENDING az új feladatoknál.
+            model_add_task(model, text, STATUS_PENDING);
+            // A modell frissíti a listákat a hozzáadás után.
+            model_refresh_lists(model, vw);
+        }
     }
 
     gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
-static void on_add_clicked(GtkButton *button, gpointer user_data) {
-    ViewWidgets *vw = user_data;
-
-    GtkWidget *dialog = gtk_window_new();
-    gtk_window_set_title(GTK_WINDOW(dialog), "Uj feladat");
-    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(vw->window));
-    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
-    gtk_window_set_default_size(GTK_WINDOW(dialog), 300, 120);
-
-    GtkWidget *content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-    gtk_window_set_child(GTK_WINDOW(dialog), content);
-
-    GtkWidget *entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Feladat neve...");
-    gtk_box_append(GTK_BOX(content), entry);
-    g_object_set_data(G_OBJECT(dialog), "entry", entry); // elmentj�k pointerk�nt
-
-    GtkWidget *buttons = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-    gtk_box_append(GTK_BOX(content), buttons);
-
-    GtkWidget *cancel_btn = gtk_button_new_with_label("Megse");
-    GtkWidget *ok_btn = gtk_button_new_with_label("Hozzaadas");
-    gtk_box_append(GTK_BOX(buttons), cancel_btn);
-    gtk_box_append(GTK_BOX(buttons), ok_btn);
-
-    g_signal_connect_swapped(cancel_btn, "clicked", G_CALLBACK(gtk_window_destroy), dialog);
-    g_signal_connect(ok_btn, "clicked", G_CALLBACK(on_add_response), vw);
-
-    gtk_window_present(GTK_WINDOW(dialog));
-}
-
-// --- CALLBACK: Kijel�lt elem t�rl�se ---
+// --- Törlés gomb esemény ---
 static void on_delete_clicked(GtkButton *button, gpointer user_data) {
-    ViewWidgets *vw = user_data;
+    (void)button;
 
-    GtkListBoxRow *row = gtk_list_box_get_selected_row(GTK_LIST_BOX(vw->list));
+    AppData *app = (AppData*) user_data;
+    ViewWidgets *vw = app->view;
+    Model *model = app->model;
+
+    // próbáljuk lekérni, melyik listában van kijelölés
+    GtkListBoxRow *row = NULL;
+    TaskStatus status = STATUS_PENDING;
+
+    if ((row = gtk_list_box_get_selected_row(GTK_LIST_BOX(vw->pending_list))))
+        status = STATUS_PENDING;
+    else if ((row = gtk_list_box_get_selected_row(GTK_LIST_BOX(vw->progress_list))))
+        status = STATUS_PROGRESS;
+    else if ((row = gtk_list_box_get_selected_row(GTK_LIST_BOX(vw->done_list))))
+        status = STATUS_DONE;
+
     if (!row) return;
 
     int index = gtk_list_box_row_get_index(row);
-    model_remove_item(model, index);
-    model_refresh_list(model, GTK_LIST_BOX(vw->list));
+    model_remove_task(model, status, index);
+    model_refresh_lists(model, vw);
 }
 
-// --- SIGNAL �sszek�t�s ---
-void controller_connect_signals(ViewWidgets *vw) {
-    model = model_new();
+// --- Fő eseménykezelők regisztrálása ---
+g_signal_connect(dialog, "response", G_CALLBACK(on_dialog_response), app);
+gtk_window_present(GTK_WINDOW(dialog));
 
-    g_signal_connect(vw->add_btn, "clicked", G_CALLBACK(on_add_clicked), vw);
-    g_signal_connect(vw->del_btn, "clicked", G_CALLBACK(on_delete_clicked), vw);
+// REMOVE the line 'gint result = gtk_dialog_run(GTK_DIALOG(dialog));'
+
+// ... and encapsulate the logic inside a new response handler function
+static void on_dialog_response(GtkDialog *dialog, gint response_id, gpointer user_data) {
+    AppData *app = (AppData*) user_data;
+    Model *model = app->model;
+    ViewWidgets *vw = app->view;
+    GtkWidget *content = gtk_dialog_get_content_area(dialog);
+    GtkWidget *entry = gtk_widget_get_first_child(content); // Get the entry widget
+
+    if (response_id == GTK_RESPONSE_OK) {
+        const char *text = gtk_entry_get_text(GTK_ENTRY(entry));
+        if (strlen(text) > 0) {
+            model_add_task(model, text, STATUS_PENDING);
+            model_refresh_lists(model, vw);
+        }
+    }
+    // Clean up the dialog
+    gtk_window_destroy(GTK_WINDOW(dialog));
 }

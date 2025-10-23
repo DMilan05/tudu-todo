@@ -5,7 +5,9 @@
 
 typedef struct {
     GtkWidget *window;
-    GtkWidget *list;
+    GtkWidget *pending_list;
+    GtkWidget *progress_list;
+    GtkWidget *done_list;
     GtkWidget *add_btn;
     GtkWidget *del_btn;
 } ViewWidgets;

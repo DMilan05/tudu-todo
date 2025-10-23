@@ -1,9 +1,8 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+//... (includes)
+// include model.h
+#include "model.h"
 
-#include <gtk/gtk.h>
-#include "view.h"
-
-void controller_connect_signals(ViewWidgets *vw);
+// Update signature
+void controller_connect_signals(ViewWidgets *vw, Model *model);
 
 #endif
