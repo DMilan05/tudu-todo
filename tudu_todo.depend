@@ -3514,3 +3514,47 @@
 1760789690 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\model.h
 	<gtk/gtk.h>
 
+1761724414 source:c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\src\controller.c
+	"controller.h"
+	"view.h"
+	"model.h"
+	"io.h"
+
+1761724414 c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\\include\controller.h
+	<gtk/gtk.h>
+
+1761724414 c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\\include\io.h
+	<glib.h>
+	"model.h"
+
+1761724414 c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\\include\model.h
+	<glib.h>
+
+1761724415 c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\\include\view.h
+	<gtk/gtk.h>
+	<glib.h>
+	"model.h"
+
+1761724243 source:c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\src\extras.c
+	"extras.h"
+	<string.h>
+
+1761724414 c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\\include\extras.h
+	<gtk/gtk.h>
+
+1761724079 source:c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\src\io.c
+	"io.h"
+	<stdio.h>
+
+1761724414 source:c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\src\main.c
+	<gtk/gtk.h>
+	"view.h"
+	"controller.h"
+
+1761724414 source:c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\src\model.c
+	"model.h"
+	<stdlib.h>
+
+1761724415 source:c:\users\user\onedrive\asztali gép\egyetemi anyagok\5. félév\gui\tudu-todo\src\view.c
+	"view.h"
+
