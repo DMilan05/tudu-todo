@@ -1,8 +1,11 @@
-//... (includes)
-// include model.h
-#include "model.h"
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
-// Update signature
-void controller_connect_signals(ViewWidgets *vw, Model *model);
+#include <gtk/gtk.h>
+
+void controller_init(GtkWidget *window);
+void controller_on_add_clicked(GtkButton *button, gpointer user_data);
+void controller_on_delete_clicked(GtkButton *button, gpointer user_data);
+void controller_on_save_clicked(GtkButton *button, gpointer user_data);
 
 #endif

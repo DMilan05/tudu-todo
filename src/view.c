@@ -1,63 +1,38 @@
 #include "view.h"
 
-    ViewWidgets* view_create_main_window(GtkApplication *app) {
-    ViewWidgets *vw = g_new(ViewWidgets, 1);
+static GtkWidget *add_button;
+static GtkWidget *entry_field;
+static GtkWidget *list_box;
 
-    // Ablak beállítása
-    vw->window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(vw->window), "TUDU ToDo Board");
-    gtk_window_set_default_size(GTK_WINDOW(vw->window), 900, 500);
+GtkWidget* view_create_main_window(GtkApplication *app) {
+    GtkWidget *window = gtk_application_window_new(app);
+    gtk_window_set_title(GTK_WINDOW(window), "ToDo App");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
 
-    // Fõ vertikális box
-    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-    gtk_window_set_child(GTK_WINDOW(vw->window), vbox);
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    gtk_window_set_child(GTK_WINDOW(window), box);
 
-    // Cím
-    GtkWidget *title = gtk_label_new("TUDU - Feladatkezelõ");
-    gtk_widget_add_css_class(title, "title");
-    gtk_box_append(GTK_BOX(vbox), title);
+    entry_field = gtk_entry_new();
+    gtk_box_append(GTK_BOX(box), entry_field);
 
-    // Keresõmezõ
-    GtkWidget *search_entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(search_entry), "Keresés...");
-    gtk_box_append(GTK_BOX(vbox), search_entry);
+    add_button = gtk_button_new_with_label("Add");
+    gtk_box_append(GTK_BOX(box), add_button);
 
-    // --- 3 oszlop egy sorban ---
-    GtkWidget *hbox_lists = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    gtk_box_append(GTK_BOX(vbox), hbox_lists);
+    list_box = gtk_list_box_new();
+    gtk_box_append(GTK_BOX(box), list_box);
 
-    struct {
-        const char *label;
-        GtkWidget **target;
-    } columns[] = {
-        {"Függõben", &vw->pending_list},
-        {"Folyamatban", &vw->progress_list},
-        {"Kész", &vw->done_list}
-    };
+    return window;
+}
 
-    for (int i = 0; i < 3; i++) {
-        GtkWidget *frame = gtk_frame_new(columns[i].label);
-        gtk_frame_set_label_align(GTK_FRAME(frame), 0.5);
-        gtk_widget_set_hexpand(frame, TRUE);
-        gtk_widget_set_vexpand(frame, TRUE);
+GtkWidget* view_get_add_button(void) { return add_button; }
+GtkWidget* view_get_entry_field(void) { return entry_field; }
+GtkWidget* view_get_list_box(void) { return list_box; }
 
-        GtkWidget *list = gtk_list_box_new();
-        gtk_widget_set_vexpand(list, TRUE);
-        gtk_frame_set_child(GTK_FRAME(frame), list);
-        gtk_box_append(GTK_BOX(hbox_lists), frame);
-
-        *columns[i].target = list;
+void view_refresh_list(GList *list) {
+    gtk_list_box_remove_all(GTK_LIST_BOX(list_box));
+    for (GList *l = list; l != NULL; l = l->next) {
+        TodoItem *item = l->data;
+        GtkWidget *row = gtk_label_new(item->title);
+        gtk_list_box_append(GTK_LIST_BOX(list_box), row);
     }
-
-    // --- Gombok alul ---
-    GtkWidget *hbox_btns = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-    gtk_box_append(GTK_BOX(vbox), hbox_btns);
-
-    vw->add_btn = gtk_button_new_with_label("Új feladat");
-    vw->del_btn = gtk_button_new_with_label("Törlés");
-
-    gtk_box_append(GTK_BOX(hbox_btns), vw->add_btn);
-    gtk_box_append(GTK_BOX(hbox_btns), vw->del_btn);
-
-    return vw;
 }
