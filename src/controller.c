@@ -1,7 +1,8 @@
+#include <gtk/gtk.h>
 #include "controller.h"
 #include "view.h"
 #include "model.h"
-#include "io.h"
+#include "io.h" // <- FONTOS: IO beillesztése
 
 GList *todos = NULL;
 
@@ -11,6 +12,7 @@ static void free_widgets_array(gpointer data, GClosure *closure) {
 }
 
 /* --- Mentés gomb az új feladat ablakban --- */
+// (Ez a függvény rendben volt, változatlan)
 static void on_add_save_clicked(GtkButton *button, gpointer user_data) {
     gpointer *widgets = (gpointer*) user_data;
     GtkWidget *title_entry = GTK_WIDGET(widgets[0]);
@@ -43,6 +45,7 @@ static void on_add_save_clicked(GtkButton *button, gpointer user_data) {
 }
 
 /* --- Hozzáadás gomb --- */
+// (Ez a függvény rendben volt, változatlan)
 void controller_on_add_clicked(GtkButton *button, gpointer user_data) {
     GtkWindow *parent = GTK_WINDOW(user_data);
     GtkWidget *add_window = view_create_add_window(parent);
@@ -67,6 +70,7 @@ void controller_on_add_clicked(GtkButton *button, gpointer user_data) {
 }
 
 /* --- Szerkesztés mentése --- */
+// (Ez a függvény rendben volt, változatlan)
 static void on_edit_save_clicked(GtkButton *button, gpointer user_data) {
     gpointer *widgets = (gpointer*) user_data;
     GtkWidget *title_entry = GTK_WIDGET(widgets[0]);
@@ -95,6 +99,7 @@ static void on_edit_save_clicked(GtkButton *button, gpointer user_data) {
     } else {
         // Frissítjük az elemet
         g_free(item->title);
+        g_free(item->description); // Biztonság kedvéért (bár ""-re állítjuk)
 
         item->title = g_strdup(title);
         item->description = g_strdup(""); // Nincs leírás
@@ -107,6 +112,7 @@ static void on_edit_save_clicked(GtkButton *button, gpointer user_data) {
 }
 
 /* --- Szerkesztés gomb --- */
+// (Ez a függvény rendben volt, változatlan)
 void controller_on_edit_clicked(GtkButton *button, gpointer user_data) {
     GtkWindow *parent = GTK_WINDOW(user_data);
     GtkListBoxRow *row = gtk_list_box_get_selected_row(GTK_LIST_BOX(view_get_list_box()));
@@ -139,6 +145,7 @@ void controller_on_edit_clicked(GtkButton *button, gpointer user_data) {
 }
 
 /* --- Késznek jelölés --- */
+// (Ez a függvény rendben volt, változatlan)
 void controller_on_mark_done_clicked(GtkButton *button, gpointer user_data) {
     GtkListBoxRow *row = gtk_list_box_get_selected_row(GTK_LIST_BOX(view_get_list_box()));
     if (!row) return;
@@ -151,6 +158,7 @@ void controller_on_mark_done_clicked(GtkButton *button, gpointer user_data) {
 }
 
 /* --- Törlés --- */
+// (Ez a függvény rendben volt, változatlan)
 void controller_on_delete_clicked(GtkButton *button, gpointer user_data) {
     GtkListBoxRow *row = gtk_list_box_get_selected_row(GTK_LIST_BOX(view_get_list_box()));
     if (!row) return;
@@ -165,15 +173,28 @@ void controller_on_delete_clicked(GtkButton *button, gpointer user_data) {
 
 /* --- Mentés fájlba --- */
 void controller_on_save_clicked(GtkButton *button, gpointer user_data) {
-    //io_save_to_file("todos.json", todos);
-    g_print("Teendők elmentve a todos.json fájlba.\n");
+    // JAVÍTVA: CSV mentés hívása
+    io_save_to_file("todos.csv", todos);
 }
 
 /* --- Inicializálás --- */
 void controller_init(GtkWidget *window) {
+    // JAVÍTVA: CSV betöltés hívása indításkor
+    todos = io_load_from_file("todos.csv");
+    view_refresh_list(todos); // Frissítjük a listát a betöltött adatokkal
+
     g_signal_connect(view_get_add_button(), "clicked", G_CALLBACK(controller_on_add_clicked), window);
     g_signal_connect(view_get_edit_button(), "clicked", G_CALLBACK(controller_on_edit_clicked), window);
     g_signal_connect(view_get_delete_button(), "clicked", G_CALLBACK(controller_on_delete_clicked), window);
     g_signal_connect(view_get_mark_done_button(), "clicked", G_CALLBACK(controller_on_mark_done_clicked), window);
     g_signal_connect(view_get_save_button(), "clicked", G_CALLBACK(controller_on_save_clicked), window);
+}
+
+/* --- Leállítás --- */
+// JAVÍTVA: Új függvény a memória felszabadításához kilépéskor
+void controller_shutdown(void) {
+    // Mielőtt bezárul a program, mentsük el automatikusan
+    io_save_to_file("todos.csv", todos);
+    // És szabadítsuk fel a listát
+    model_free_list(todos);
 }

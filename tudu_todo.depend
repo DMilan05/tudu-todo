@@ -1,29 +1,33 @@
 # depslib dependency file v1.0
-1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\controller.c
+1762698690 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\controller.c
+	<gtk/gtk.h>
 	"controller.h"
 	"view.h"
 	"model.h"
 	"io.h"
 
-1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\extras.c
+1762697535 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\extras.c
 	"extras.h"
 	<string.h>
 
-1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\io.c
+1762698690 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\io.c
 	"io.h"
+	<glib/gstdio.h>
 	<stdio.h>
 
-1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\model.c
+1762697574 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\model.c
 	"model.h"
-	<stdlib.h>
 
-1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\search.c
+1762697587 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\search.c
 	"search.h"
 	"view.h"
 	<string.h>
 
-1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\view.c
+1762697598 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\view.c
 	"view.h"
+	<gtk/gtk.h>
+	"model.h"
+	"extras.h"
 
 1762697155 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\view.h
 	<gtk/gtk.h>
@@ -606,7 +610,7 @@
 	<crtdefs.h>
 	<io.h>
 
-1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\io.h
+1762698885 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\io.h
 	<glib.h>
 	"model.h"
 
@@ -3515,10 +3519,10 @@
 1752524157 c:\msys64\ucrt64\include\gtk-4.0\gtk\gtkwindowhandle.h
 	<gtk/gtkwidget.h>
 
-1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\controller.h
+1762698742 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\controller.h
 	<gtk/gtk.h>
 
-1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\main.c
+1762697561 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\main.c
 	<gtk/gtk.h>
 	"view.h"
 	"controller.h"
@@ -3526,10 +3530,29 @@
 1762697155 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\model.h
 	<glib.h>
 
-1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\extras.h
+1762697155 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\extras.h
+	<glib.h>
 	<gtk/gtk.h>
 
 1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\search.h
 	<gtk/gtk.h>
 	"model.h"
+
+1757182987 c:\msys64\ucrt64\include\glib-2.0\glib\gstdio.h
+	<glib/gprintf.h>
+	<errno.h>
+	<sys/stat.h>
+
+1757182987 c:\msys64\ucrt64\include\glib-2.0\glib\gprintf.h
+	<glib.h>
+	<stdio.h>
+	<stdarg.h>
+
+1758466018 c:\msys64\ucrt64\include\sys\stat.h
+	<crtdefs.h>
+	<io.h>
+	<sys/types.h>
+	<_mingw_stat64.h>
+
+1758466018 c:\msys64\ucrt64\include\_mingw_stat64.h
 
