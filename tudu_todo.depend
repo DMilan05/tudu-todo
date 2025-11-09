@@ -1,23 +1,34 @@
 # depslib dependency file v1.0
-1760790344 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\controller.c
+1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\controller.c
 	"controller.h"
+	"view.h"
 	"model.h"
+	"io.h"
+
+1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\extras.c
+	"extras.h"
+	<string.h>
+
+1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\io.c
+	"io.h"
+	<stdio.h>
+
+1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\model.c
+	"model.h"
+	<stdlib.h>
+
+1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\search.c
+	"search.h"
+	"view.h"
+	<string.h>
+
+1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\view.c
 	"view.h"
 
-1760552653 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\extras.c
-
-1760552600 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\io.c
-
-1760789691 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\model.c
-	"model.h"
-
-1760552622 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\search.c
-
-1760789072 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\view.c
-	"view.h"
-
-1760891554 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\view.h
+1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\view.h
 	<gtk/gtk.h>
+	<glib.h>
+	"model.h"
 
 1752524157 c:\msys64\ucrt64\include\gtk-4.0\gtk\gtk.h
 	<gtk/css/gtkcss.h>
@@ -596,7 +607,9 @@
 	<crtdefs.h>
 	<io.h>
 
-1760553263 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\io.h
+1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\io.h
+	<glib.h>
+	"model.h"
 
 1757182987 c:\msys64\ucrt64\include\glib-2.0\glib\genviron.h
 	<glib/gtypes.h>
@@ -3503,15 +3516,21 @@
 1752524157 c:\msys64\ucrt64\include\gtk-4.0\gtk\gtkwindowhandle.h
 	<gtk/gtkwidget.h>
 
-1760789095 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\controller.h
+1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\controller.h
 	<gtk/gtk.h>
-	"view.h"
 
-1760789018 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\main.c
+1761725915 source:c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\src\main.c
 	<gtk/gtk.h>
 	"view.h"
 	"controller.h"
 
-1760789690 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\model.h
+1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\model.h
+	<glib.h>
+
+1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\extras.h
 	<gtk/gtk.h>
+
+1761725915 c:\users\user\onedrive\asztali gép\nye\5. félév\gui\tudu_todo\\include\search.h
+	<gtk/gtk.h>
+	"model.h"
 
