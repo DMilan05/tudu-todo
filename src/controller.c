@@ -183,6 +183,41 @@ void controller_on_delete_clicked(GtkButton *button, gpointer user_data)
     view_refresh_list(todos);
 }
 
+/* --- Rendezés --- */
+
+// Összehasonlító függvény a prioritás szerinti rendezéshez (csökkenő sorrend)
+static gint sort_by_priority(gconstpointer a, gconstpointer b)
+{
+    const TodoItem *item_a = (const TodoItem *)a;
+    const TodoItem *item_b = (const TodoItem *)b;
+    // A nagyobb prioritás kerül előre, ezért b-t hasonlítjuk a-hoz.
+    return item_b->priority - item_a->priority;
+}
+
+// Összehasonlító függvény a cím szerinti rendezéshez (ABC sorrend)
+static gint sort_by_title(gconstpointer a, gconstpointer b)
+{
+    const TodoItem *item_a = (const TodoItem *)a;
+    const TodoItem *item_b = (const TodoItem *)b;
+    // A g_utf8_collate egy lokalizált, Unicode-biztos összehasonlítást végez.
+    return g_utf8_collate(item_a->title, item_b->title);
+}
+
+void controller_on_sort_changed(GtkDropDown *dropdown, GParamSpec *pspec, gpointer user_data)
+{
+    guint selected = gtk_drop_down_get_selected(dropdown);
+
+    if (selected == 1) // 1 = "ABC szerint"
+    {
+        todos = g_list_sort(todos, (GCompareFunc)sort_by_title);
+    }
+    else if (selected == 2) // 2 = "Prioritás szerint"
+    {
+        todos = g_list_sort(todos, (GCompareFunc)sort_by_priority);
+    }
+    view_refresh_list(todos);
+}
+
 /* --- Mentés fájlba --- */
 void controller_on_save_clicked(GtkButton *button, gpointer user_data)
 {
@@ -202,6 +237,7 @@ void controller_init(GtkWidget *window)
     g_signal_connect(view_get_delete_button(), "clicked", G_CALLBACK(controller_on_delete_clicked), window);
     g_signal_connect(view_get_mark_done_button(), "clicked", G_CALLBACK(controller_on_mark_done_clicked), window);
     g_signal_connect(view_get_save_button(), "clicked", G_CALLBACK(controller_on_save_clicked), window);
+    g_signal_connect(view_get_sort_dropdown(), "notify::selected", G_CALLBACK(controller_on_sort_changed), NULL);
 
     // A keresés inicializálása
     search_init(GTK_SEARCH_ENTRY(view_get_search_entry()), GTK_LIST_BOX(view_get_list_box()));

@@ -12,6 +12,7 @@ static GtkWidget *save_button;
 static GtkWidget *mark_done_button;
 static GtkWidget *edit_button;
 static GtkWidget *search_entry;
+static GtkWidget *sort_dropdown;
 
 static GtkWidget *add_window = NULL;
 static GtkWidget *edit_window = NULL;
@@ -33,6 +34,14 @@ GtkWidget *view_create_main_window(GtkApplication *app)
 
     save_button = gtk_button_new_with_label("Mentés");
     gtk_box_append(GTK_BOX(menu_bar), save_button);
+
+    // Rendezési opciók legördülő menüje
+    const char *sort_options[] = {"Rendezés...", "ABC szerint", "Prioritás szerint", NULL};
+    sort_dropdown = gtk_drop_down_new_from_strings(sort_options);
+    gtk_box_append(GTK_BOX(menu_bar), sort_dropdown);
+    // A "Rendezés..." felirat legyen a placeholder, ne egy választható opció.
+    // Ehhez a 0. elemet nem tesszük választhatóvá.
+    gtk_drop_down_set_enable_search(GTK_DROP_DOWN(sort_dropdown), FALSE);
 
     search_entry = gtk_search_entry_new();
     gtk_search_entry_set_placeholder_text(GTK_SEARCH_ENTRY(search_entry), "Keresés...");
@@ -71,6 +80,7 @@ GtkWidget *view_get_save_button(void) { return save_button; }
 GtkWidget *view_get_mark_done_button(void) { return mark_done_button; }
 GtkWidget *view_get_edit_button(void) { return edit_button; }
 GtkWidget *view_get_search_entry(void) { return search_entry; }
+GtkWidget *view_get_sort_dropdown(void) { return sort_dropdown; }
 
 /* --- Lista frissítése --- */
 void view_refresh_list(GList *list)
