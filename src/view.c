@@ -2,6 +2,7 @@
 #include <gtk/gtk.h>
 #include "model.h"
 #include "extras.h"
+#include "controller.h" // Hozzáadjuk a controller headert a függvénydeklarációk miatt
 
 // Itt van az összes statikus változó
 static GtkWidget *add_button;
@@ -237,18 +238,26 @@ GtkWidget *view_create_edit_window(GtkWindow *parent, TodoItem *item)
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(prio_spin), item->priority);
     gtk_box_append(GTK_BOX(hbox_details), prio_spin);
 
-    GtkWidget *status = gtk_check_button_new_with_label("Kész (Törlés mentéskor)");
+    // A "Kész" állapotot egy egyszerű jelölőnégyzet kezeli.
+    GtkWidget *status = gtk_check_button_new_with_label("Kész");
     if (item)
         gtk_check_button_set_active(GTK_CHECK_BUTTON(status), item->completed);
-    gtk_box_append(GTK_BOX(hbox_details), status);
+    gtk_box_append(GTK_BOX(box), status); // Külön sorba tesszük a jobb átláthatóságért
 
     GtkWidget *buttons = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
     gtk_box_append(GTK_BOX(box), buttons);
 
     GtkWidget *save_btn = gtk_button_new_with_label("Mentés");
+    gtk_widget_set_hexpand(save_btn, TRUE); // A gombok kitöltik a helyet
     gtk_box_append(GTK_BOX(buttons), save_btn);
 
+    // Új "Törlés" gomb hozzáadása a szerkesztő ablakhoz
+    GtkWidget *delete_btn = gtk_button_new_with_label("Törlés");
+    gtk_widget_add_css_class(delete_btn, "destructive-action"); // Piros szín a veszélyes művelethez
+    gtk_box_append(GTK_BOX(buttons), delete_btn);
+
     GtkWidget *cancel_btn = gtk_button_new_with_label("Mégse");
+    gtk_widget_set_hexpand(cancel_btn, TRUE);
     gtk_box_append(GTK_BOX(buttons), cancel_btn);
 
     g_object_set_data(G_OBJECT(edit_window), "title_entry", title);
@@ -256,6 +265,10 @@ GtkWidget *view_create_edit_window(GtkWindow *parent, TodoItem *item)
     g_object_set_data(G_OBJECT(edit_window), "done_check", status);
     g_object_set_data(G_OBJECT(edit_window), "save_btn", save_btn);
 
+    // A Törlés gomb eseménykezelője. A főablak törlés funkcióját hívja meg,
+    // majd bezárja a szerkesztő ablakot.
+    g_signal_connect_swapped(delete_btn, "clicked", G_CALLBACK(controller_on_delete_clicked), NULL);
+    g_signal_connect_swapped(delete_btn, "clicked", G_CALLBACK(gtk_window_close), edit_window);
     g_signal_connect_swapped(cancel_btn, "clicked", G_CALLBACK(gtk_window_close), edit_window);
     g_signal_connect(edit_window, "destroy", G_CALLBACK(on_edit_window_destroyed), NULL);
 

@@ -99,23 +99,16 @@ static void on_edit_save_clicked(GtkButton *button, gpointer user_data)
         return;
     }
 
-    if (done)
-    {
-        // Töröljük az elemet
-        todos = g_list_remove(todos, item);
-        model_free_item(item);
-    }
-    else
-    {
-        // Frissítjük az elemet
-        g_free(item->title);
-        g_free(item->description); // Biztonság kedvéért (bár ""-re állítjuk)
+    // Frissítjük az elemet a beírt adatokkal.
+    // A "Kész" állapotot is egyszerűen frissítjük, nem törlünk.
+    g_free(item->title);
+    g_free(item->description); // Biztonság kedvéért (bár ""-re állítjuk)
 
-        item->title = g_strdup(title);
-        item->description = g_strdup(""); // Nincs leírás
-        item->priority = priority;
-        item->completed = FALSE;
-    }
+    item->title = g_strdup(title);
+    item->description = g_strdup(""); // Nincs leírás
+    item->priority = priority;
+    // A jelölőnégyzet állapota alapján beállítjuk a 'completed' mezőt.
+    item->completed = done;
 
     view_refresh_list(todos);
     gtk_window_close(GTK_WINDOW(window));
