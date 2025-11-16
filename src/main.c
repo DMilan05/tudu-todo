@@ -9,7 +9,13 @@
 static void load_css(void)
 {
     GtkCssProvider *provider = gtk_css_provider_new();
-    GString *css_string = g_string_new("");
+    // Alap stílus a körnek: méret, lekerekítés, margó
+    GString *css_string = g_string_new(
+        ".priority-indicator {\n"
+        "  min-width: 8px; min-height: 8px;\n"
+        "  border-radius: 4px;\n"
+        "  margin-right: 4px;\n"
+        "}\n");
 
     for (gint i = 0; i <= 10; i++)
     {
@@ -37,7 +43,7 @@ static void load_css(void)
         }
 
         // CSS szabály hozzáfűzése a stringhez
-        g_string_append_printf(css_string, "row.priority-%d label { color: rgb(%d, %d, %d); }\n", i, r, g, b);
+        g_string_append_printf(css_string, "row.priority-%d .priority-indicator { background-color: rgb(%d, %d, %d); }\n", i, r, g, b);
     }
 
     gtk_css_provider_load_from_string(provider, css_string->str);

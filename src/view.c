@@ -39,6 +39,7 @@ GtkWidget *view_create_main_window(GtkApplication *app)
 
     list_box = gtk_list_box_new();
     gtk_list_box_set_selection_mode(GTK_LIST_BOX(list_box), GTK_SELECTION_SINGLE);
+    gtk_list_box_set_show_separators(GTK_LIST_BOX(list_box), TRUE);
 
     GtkWidget *scrolled_window = gtk_scrolled_window_new();
     gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled_window), list_box);
@@ -97,13 +98,31 @@ void view_refresh_list(GList *list)
             label_text = g_markup_printf_escaped("%s (Prioritás: %d)", item->title, item->priority);
         }
 
+        // Létrehozunk egy horizontális dobozt a körnek és a szövegnek
+        GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+        gtk_widget_set_halign(hbox, GTK_ALIGN_START);
+        gtk_widget_set_valign(hbox, GTK_ALIGN_CENTER);
+        // Egy kis margót adunk a dobozhoz, hogy a kör ne vágódjon le a sor szélén.
+        // A 6 pixeles margó általában elegendő helyet biztosít.
+        gtk_widget_set_margin_start(hbox, 6);
+        // Függőleges margót adunk hozzá, hogy a sorok magasabbak legyenek.
+        // Ettől az elemek nagyobbnak és szellősebbnek tűnnek.
+        gtk_widget_set_margin_top(hbox, 6);
+        gtk_widget_set_margin_bottom(hbox, 6);
+
+        // Létrehozzuk a prioritásjelző "kört" (egy egyszerű widget, amit CSS-sel formázunk)
+        GtkWidget *prio_indicator = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_widget_add_css_class(prio_indicator, "priority-indicator");
+        gtk_box_append(GTK_BOX(hbox), prio_indicator);
+
         GtkWidget *label = gtk_label_new(NULL);
         gtk_label_set_markup(GTK_LABEL(label), label_text);
         g_free(label_text);
 
         gtk_label_set_xalign(GTK_LABEL(label), 0.0);
-        gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row), label);
+        gtk_box_append(GTK_BOX(hbox), label); // A címkét a dobozhoz adjuk
 
+        gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row), hbox); // A dobozt tesszük a sorba
         // A korábbi CSS osztályok eltávolítása. Mivel most már 11 különböző van,
         // egyszerűbb, ha egy ciklussal távolítjuk el őket.
         for (int i = 0; i <= 10; ++i)
@@ -116,7 +135,6 @@ void view_refresh_list(GList *list)
         { // Csak akkor színezzük, ha nincs kész
             gchar *css_class = (gchar *)extras_get_css_class_for_priority(item->priority);
             gtk_widget_add_css_class(row, css_class);
-            g_free(css_class); // Felszabadítjuk a g_strdup_printf által lefoglalt memóriát
         }
 
         g_object_set_data(G_OBJECT(row), "todo_ptr", item);

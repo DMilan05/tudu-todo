@@ -22,10 +22,15 @@ gchar *extras_format_priority(gint priority)
  */
 const gchar *extras_get_css_class_for_priority(gint priority)
 {
+    // Statikus buffer a felesleges memóriafoglalás elkerülésére.
+    // Mivel a GTK egy szálon fut, ez itt biztonságos.
+    static gchar buffer[16];
+
     // Biztonsági ellenőrzés, hogy a prioritás a [0, 10] tartományban legyen
     if (priority < 0)
         priority = 0;
     if (priority > 10)
         priority = 10;
-    return g_strdup_printf("priority-%d", priority);
+    g_snprintf(buffer, sizeof(buffer), "priority-%d", priority);
+    return buffer;
 }
