@@ -12,9 +12,12 @@ static void load_css(void)
     // Alap stílus a körnek: méret, lekerekítés, margó
     GString *css_string = g_string_new(
         ".priority-indicator {\n"
-        "  min-width: 8px; min-height: 8px;\n"
-        "  border-radius: 4px;\n"
-        "  margin-right: 4px;\n"
+        "  min-width: 10px; min-height: 10px;\n"
+        "  border-radius: 5px;\n"
+        "  margin-right: 6px;\n"
+        "}\n"
+        "row label {\n"
+        "  font-size: 1.1em;\n"
         "}\n");
 
     for (gint i = 0; i <= 10; i++)

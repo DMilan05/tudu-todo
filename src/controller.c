@@ -45,6 +45,9 @@ static void on_add_save_clicked(GtkButton *button, gpointer user_data)
     model_add_item(&todos, item);
     view_refresh_list(todos);
 
+    // Automatikus mentés minden új elem hozzáadása után.
+    io_save_to_file("todos.csv", todos);
+
     gtk_window_close(GTK_WINDOW(window));
 }
 
@@ -183,6 +186,32 @@ void controller_on_delete_clicked(GtkButton *button, gpointer user_data)
     view_refresh_list(todos);
 }
 
+/* --- Kész elemek törlése --- */
+void controller_on_delete_completed_clicked(GtkButton *button, gpointer user_data)
+{
+    GList *items_to_delete = NULL;
+
+    // 1. Összegyűjtjük a törlendő (kész) elemeket egy külön listába.
+    //    Fontos, hogy ne módosítsuk a `todos` listát, amíg bejárjuk.
+    for (GList *l = todos; l != NULL; l = l->next)
+    {
+        TodoItem *item = (TodoItem *)l->data;
+        if (item->completed)
+        {
+            items_to_delete = g_list_append(items_to_delete, item);
+        }
+    }
+
+    // 2. Töröljük az elemeket a fő listából és felszabadítjuk a memóriájukat.
+    for (GList *l = items_to_delete; l != NULL; l = l->next)
+    {
+        todos = g_list_remove(todos, l->data);
+        model_free_item((TodoItem *)l->data);
+    }
+    g_list_free(items_to_delete); // Felszabadítjuk a segédlistát.
+    view_refresh_list(todos);
+}
+
 /* --- Rendezés --- */
 
 // Összehasonlító függvény a prioritás szerinti rendezéshez (csökkenő sorrend)
@@ -237,6 +266,7 @@ void controller_init(GtkWidget *window)
     g_signal_connect(view_get_delete_button(), "clicked", G_CALLBACK(controller_on_delete_clicked), window);
     g_signal_connect(view_get_mark_done_button(), "clicked", G_CALLBACK(controller_on_mark_done_clicked), window);
     g_signal_connect(view_get_save_button(), "clicked", G_CALLBACK(controller_on_save_clicked), window);
+    g_signal_connect(view_get_delete_completed_button(), "clicked", G_CALLBACK(controller_on_delete_completed_clicked), NULL);
     g_signal_connect(view_get_sort_dropdown(), "notify::selected", G_CALLBACK(controller_on_sort_changed), NULL);
 
     // A keresés inicializálása

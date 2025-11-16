@@ -13,6 +13,7 @@ static GtkWidget *mark_done_button;
 static GtkWidget *edit_button;
 static GtkWidget *search_entry;
 static GtkWidget *sort_dropdown;
+static GtkWidget *delete_completed_button;
 
 static GtkWidget *add_window = NULL;
 static GtkWidget *edit_window = NULL;
@@ -69,6 +70,9 @@ GtkWidget *view_create_main_window(GtkApplication *app)
     delete_button = gtk_button_new_with_label("Törlés");
     gtk_box_append(GTK_BOX(controls), delete_button);
 
+    delete_completed_button = gtk_button_new_with_label("Kész elemek törlése");
+    gtk_box_append(GTK_BOX(controls), delete_completed_button);
+
     return window;
 }
 
@@ -81,6 +85,7 @@ GtkWidget *view_get_mark_done_button(void) { return mark_done_button; }
 GtkWidget *view_get_edit_button(void) { return edit_button; }
 GtkWidget *view_get_search_entry(void) { return search_entry; }
 GtkWidget *view_get_sort_dropdown(void) { return sort_dropdown; }
+GtkWidget *view_get_delete_completed_button(void) { return delete_completed_button; }
 
 /* --- Lista frissítése --- */
 void view_refresh_list(GList *list)
@@ -118,8 +123,8 @@ void view_refresh_list(GList *list)
         gtk_widget_set_margin_start(hbox, 6);
         // Függőleges margót adunk hozzá, hogy a sorok magasabbak legyenek.
         // Ettől az elemek nagyobbnak és szellősebbnek tűnnek.
-        gtk_widget_set_margin_top(hbox, 6);
-        gtk_widget_set_margin_bottom(hbox, 6);
+        gtk_widget_set_margin_top(hbox, 8);
+        gtk_widget_set_margin_bottom(hbox, 8);
 
         // Létrehozzuk a prioritásjelző "kört" (egy egyszerű widget, amit CSS-sel formázunk)
         GtkWidget *prio_indicator = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);

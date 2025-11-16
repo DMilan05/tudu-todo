@@ -15,6 +15,7 @@ GtkWidget *view_get_mark_done_button(void);
 GtkWidget *view_get_edit_button(void);
 GtkWidget *view_get_search_entry(void);
 GtkWidget *view_get_sort_dropdown(void);
+GtkWidget *view_get_delete_completed_button(void);
 GtkWidget *view_get_list_box(void);
 
 /* --- Lista friss�t�se --- */
