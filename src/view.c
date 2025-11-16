@@ -15,7 +15,8 @@ static GtkWidget *search_entry;
 static GtkWidget *add_window = NULL;
 static GtkWidget *edit_window = NULL;
 
-GtkWidget* view_create_main_window(GtkApplication *app) {
+GtkWidget *view_create_main_window(GtkApplication *app)
+{
     GtkWidget *window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), "Tudu-ToDo");
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
@@ -60,34 +61,39 @@ GtkWidget* view_create_main_window(GtkApplication *app) {
     return window;
 }
 
-
 /* Getterek */
-GtkWidget* view_get_add_button(void) { return add_button; }
-GtkWidget* view_get_list_box(void) { return list_box; }
-GtkWidget* view_get_delete_button(void) { return delete_button; }
-GtkWidget* view_get_save_button(void) { return save_button; }
-GtkWidget* view_get_mark_done_button(void) { return mark_done_button; }
-GtkWidget* view_get_edit_button(void) { return edit_button; }
-GtkWidget* view_get_search_entry(void) { return search_entry; }
-
+GtkWidget *view_get_add_button(void) { return add_button; }
+GtkWidget *view_get_list_box(void) { return list_box; }
+GtkWidget *view_get_delete_button(void) { return delete_button; }
+GtkWidget *view_get_save_button(void) { return save_button; }
+GtkWidget *view_get_mark_done_button(void) { return mark_done_button; }
+GtkWidget *view_get_edit_button(void) { return edit_button; }
+GtkWidget *view_get_search_entry(void) { return search_entry; }
 
 /* --- Lista frissítése --- */
-void view_refresh_list(GList *list) {
+void view_refresh_list(GList *list)
+{
     GtkWidget *child;
-    while ((child = gtk_widget_get_first_child(list_box)) != NULL) {
+    while ((child = gtk_widget_get_first_child(list_box)) != NULL)
+    {
         gtk_list_box_remove(GTK_LIST_BOX(list_box), child);
     }
 
-    for (GList *l = list; l; l = l->next) {
+    for (GList *l = list; l; l = l->next)
+    {
         TodoItem *item = l->data;
-        if (!item || !item->title) continue;
+        if (!item || !item->title)
+            continue;
 
         GtkWidget *row = gtk_list_box_row_new();
 
         gchar *label_text;
-        if (item->completed) {
+        if (item->completed)
+        {
             label_text = g_markup_printf_escaped("<s>%s</s> (Prioritás: %d)", item->title, item->priority);
-        } else {
+        }
+        else
+        {
             label_text = g_markup_printf_escaped("%s (Prioritás: %d)", item->title, item->priority);
         }
 
@@ -98,15 +104,19 @@ void view_refresh_list(GList *list) {
         gtk_label_set_xalign(GTK_LABEL(label), 0.0);
         gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row), label);
 
-        // CSS osztályok eltávolítása (tisztítás)
-        gtk_widget_remove_css_class(row, "priority-high");
-        gtk_widget_remove_css_class(row, "priority-medium");
-        gtk_widget_remove_css_class(row, "priority-low");
+        // A korábbi CSS osztályok eltávolítása. Mivel most már 11 különböző van,
+        // egyszerűbb, ha egy ciklussal távolítjuk el őket.
+        for (int i = 0; i <= 10; ++i)
+        {
+            gtk_widget_remove_css_class(row, g_strdup_printf("priority-%d", i));
+        }
 
         // Megfelelő CSS osztály hozzáadása a prioritás alapján
-        if (!item->completed) { // Csak akkor színezzük, ha nincs kész
-            const gchar *css_class = extras_get_css_class_for_priority(item->priority);
+        if (!item->completed)
+        { // Csak akkor színezzük, ha nincs kész
+            gchar *css_class = (gchar *)extras_get_css_class_for_priority(item->priority);
             gtk_widget_add_css_class(row, css_class);
+            g_free(css_class); // Felszabadítjuk a g_strdup_printf által lefoglalt memóriát
         }
 
         g_object_set_data(G_OBJECT(row), "todo_ptr", item);
@@ -114,14 +124,16 @@ void view_refresh_list(GList *list) {
     }
 }
 
-static void on_add_window_destroyed(GtkWidget *widget, gpointer data) {
+static void on_add_window_destroyed(GtkWidget *widget, gpointer data)
+{
     add_window = NULL;
 }
 
-
 /* --- Hozzáadás ablak --- */
-GtkWidget* view_create_add_window(GtkWindow *parent) {
-    if (add_window) {
+GtkWidget *view_create_add_window(GtkWindow *parent)
+{
+    if (add_window)
+    {
         gtk_window_present(GTK_WINDOW(add_window));
         return add_window;
     }
@@ -168,14 +180,16 @@ GtkWidget* view_create_add_window(GtkWindow *parent) {
     return add_window;
 }
 
-static void on_edit_window_destroyed(GtkWidget *widget, gpointer data) {
+static void on_edit_window_destroyed(GtkWidget *widget, gpointer data)
+{
     edit_window = NULL;
 }
 
-
 /* --- Szerkesztés ablak --- */
-GtkWidget* view_create_edit_window(GtkWindow *parent, TodoItem *item) {
-    if (edit_window) {
+GtkWidget *view_create_edit_window(GtkWindow *parent, TodoItem *item)
+{
+    if (edit_window)
+    {
         gtk_window_present(GTK_WINDOW(edit_window));
         return edit_window;
     }
@@ -201,11 +215,13 @@ GtkWidget* view_create_edit_window(GtkWindow *parent, TodoItem *item) {
     gtk_box_append(GTK_BOX(hbox_details), prio_label);
 
     GtkWidget *prio_spin = gtk_spin_button_new_with_range(0, 10, 1);
-    if (item) gtk_spin_button_set_value(GTK_SPIN_BUTTON(prio_spin), item->priority);
+    if (item)
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(prio_spin), item->priority);
     gtk_box_append(GTK_BOX(hbox_details), prio_spin);
 
     GtkWidget *status = gtk_check_button_new_with_label("Kész (Törlés mentéskor)");
-    if (item) gtk_check_button_set_active(GTK_CHECK_BUTTON(status), item->completed);
+    if (item)
+        gtk_check_button_set_active(GTK_CHECK_BUTTON(status), item->completed);
     gtk_box_append(GTK_BOX(hbox_details), status);
 
     GtkWidget *buttons = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
