@@ -1,89 +1,99 @@
 #include "io.h"
-#include <glib/gstdio.h> // Fájlmûveletekhez
-#include <stdio.h>      // Standard C I/O
+#include <glib/gstdio.h> // Fï¿½jlmï¿½veletekhez
+#include <stdio.h>       // Standard C I/O
 
 /*
- * Egyetlen karakterláncot "megtisztít" mentéshez:
- * Kicseréli a TAB és Újsor karaktereket szóközre, hogy ne törje meg a CSV/TSV sort.
+ * Egyetlen karakterlï¿½ncot "megtisztï¿½t" mentï¿½shez:
+ * Kicserï¿½li a TAB ï¿½s ï¿½jsor karaktereket szï¿½kï¿½zre, hogy ne tï¿½rje meg a CSV/TSV sort.
  */
-static gchar* sanitize_string(const gchar *str) {
-    if (!str) return g_strdup("");
-    // Kicseréli a \t, \r, \n karaktereket szóközre
+static gchar *sanitize_string(const gchar *str)
+{
+    if (!str)
+        return g_strdup("");
+    // Kicserï¿½li a \t, \r, \n karaktereket szï¿½kï¿½zre
     return g_strdelimit(g_strdup(str), "\t\r\n", ' ');
 }
 
 /*
- * Elmenti a teljes listát a megadott fájlba (TSV formátumban)
+ * Elmenti a teljes listï¿½t a megadott fï¿½jlba (TSV formï¿½tumban)
  */
-void io_save_to_file(const gchar *filename, GList *list) {
-    FILE *file = g_fopen(filename, "w"); // "w" = write (írás)
-    if (!file) {
-        g_warning("Hiba: A %s fájlt nem sikerült megnyitni írásra.", filename);
+void io_save_to_file(const gchar *filename, GList *list)
+{
+    FILE *file = g_fopen(filename, "w"); // "w" = write (ï¿½rï¿½s)
+    if (!file)
+    {
+        g_warning("Hiba: A %s fï¿½jlt nem sikerï¿½lt megnyitni ï¿½rï¿½sra.", filename);
         return;
     }
 
-    // Végigmegyünk a listán
-    for (GList *l = list; l != NULL; l = l->next) {
-        TodoItem *item = (TodoItem*)l->data;
+    // Vï¿½gigmegyï¿½nk a listï¿½n
+    for (GList *l = list; l != NULL; l = l->next)
+    {
+        TodoItem *item = (TodoItem *)l->data;
 
-        // "Megtisztítjuk" a stringeket mentés elõtt
+        // "Megtisztï¿½tjuk" a stringeket mentï¿½s elï¿½tt
         gchar *title_safe = sanitize_string(item->title);
         gchar *desc_safe = sanitize_string(item->description);
         gchar *cat_safe = sanitize_string(item->category);
 
-        // Kiírjuk az adatokat TAB-bal elválasztva
+        // Kiï¿½rjuk az adatokat TAB-bal elvï¿½lasztva
         fprintf(file, "%s\t%s\t%s\t%d\t%d\n",
                 title_safe,
                 desc_safe,
                 cat_safe,
                 item->priority,
-                item->completed ? 1 : 0 // Mentés 1-ként vagy 0-ként
+                item->completed ? 1 : 0 // Mentï¿½s 1-kï¿½nt vagy 0-kï¿½nt
         );
 
-        // Felszabadítjuk a megtisztított stringeket
+        // Felszabadï¿½tjuk a megtisztï¿½tott stringeket
         g_free(title_safe);
         g_free(desc_safe);
         g_free(cat_safe);
     }
 
     fclose(file);
-    g_print("Lista elmentve a %s fájlba.\n", filename);
+    g_print("Lista elmentve a %s fï¿½jlba.\n", filename);
 }
 
 /*
- * Betölti a listát a fájlból.
+ * Betï¿½lti a listï¿½t a fï¿½jlbï¿½l.
  */
-GList* io_load_from_file(const gchar *filename) {
-    if (!g_file_test(filename, G_FILE_TEST_EXISTS)) {
-        g_print("A %s fájl nem található, üres lista betöltve.\n", filename);
+GList *io_load_from_file(const gchar *filename)
+{
+    if (!g_file_test(filename, G_FILE_TEST_EXISTS))
+    {
+        g_print("A %s fï¿½jl nem talï¿½lhatï¿½, ï¿½res lista betï¿½ltve.\n", filename);
         return NULL;
     }
 
-    FILE *file = g_fopen(filename, "r"); // "r" = read (olvasás)
-    if (!file) {
-        g_warning("Hiba: A %s fájlt nem sikerült megnyitni olvasásra.", filename);
+    FILE *file = g_fopen(filename, "r"); // "r" = read (olvasï¿½s)
+    if (!file)
+    {
+        g_warning("Hiba: A %s fï¿½jlt nem sikerï¿½lt megnyitni olvasï¿½sra.", filename);
         return NULL;
     }
 
     GList *list = NULL;
-    char buffer[2048]; // Tegyük fel, hogy egy sor max 2KB
+    char buffer[2048]; // Tegyï¿½k fel, hogy egy sor max 2KB
     guint lines_loaded = 0;
 
-    // Olvasunk soronként, amíg a fájl végére nem érünk
-    while (fgets(buffer, sizeof(buffer), file)) {
-        // Eltávolítjuk a sorvégi \n karaktert
+    // Olvasunk soronkï¿½nt, amï¿½g a fï¿½jl vï¿½gï¿½re nem ï¿½rï¿½nk
+    while (fgets(buffer, sizeof(buffer), file))
+    {
+        // Eltï¿½volï¿½tjuk a sorvï¿½gi \n karaktert
         g_strchomp(buffer);
 
-        // Felbontjuk a sort a TAB karakterek mentén
-        gchar **parts = g_strsplit(buffer, "\t", 5); // Max 5 részre vágjuk
+        // Felbontjuk a sort a TAB karakterek mentï¿½n
+        gchar **parts = g_strsplit(buffer, "\t", 5); // Max 5 rï¿½szre vï¿½gjuk
 
-        // Ellenõrizzük, hogy megvan-e mind az 5 rész
-        if (g_strv_length(parts) == 5) {
+        // Ellenï¿½rizzï¿½k, hogy megvan-e mind az 5 rï¿½sz
+        if (g_strv_length(parts) == 5)
+        {
             TodoItem *item = g_new0(TodoItem, 1);
             item->title = g_strdup(parts[0]);
             item->description = g_strdup(parts[1]);
             item->category = g_strdup(parts[2]);
-            // Sztringbõl integerré alakítás
+            // Sztringbï¿½l integerrï¿½ alakï¿½tï¿½s
             item->priority = (gint)g_ascii_strtoll(parts[3], NULL, 10);
             item->completed = (gboolean)(g_ascii_strtoll(parts[4], NULL, 10) != 0);
 
@@ -91,10 +101,10 @@ GList* io_load_from_file(const gchar *filename) {
             lines_loaded++;
         }
 
-        g_strfreev(parts); // Felszabadítjuk a felbontott tömböt
+        g_strfreev(parts); // Felszabadï¿½tjuk a felbontott tï¿½mbï¿½t
     }
 
     fclose(file);
-    g_print("%d elem betöltve a %s fájlból.\n", lines_loaded, filename);
+    g_print("%d elem betï¿½ltve a %s fï¿½jlbï¿½l.\n", lines_loaded, filename);
     return list;
 }
