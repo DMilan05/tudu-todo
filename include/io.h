@@ -4,10 +4,11 @@
 #include <glib.h>
 #include "model.h"
 
-// Elmenti a teljes listát a megadott fájlba
+// Elmenti a teendok listajat a megadott fajlba.
 void io_save_to_file(const gchar *filename, GList *list);
 
-// Betölti a listát a fájlból. Ha a fájl nem létezik, NULL-t ad vissza.
+// Betolti a teendok listajat a megadott fajlbol.
+// Ha a fajl nem letezik, NULL-t ad vissza.
 GList* io_load_from_file(const gchar *filename);
 
 #endif /* IO_H */

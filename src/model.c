@@ -8,7 +8,6 @@ void model_add_item(GList **list, TodoItem *item) {
     *list = g_list_append(*list, item);
 }
 
-// Ez a függvény jelenleg nincs használatban, de a headerben benne van
 void model_remove_item(GList **list, gint index) {
     GList *nth = g_list_nth(*list, index);
     if (nth) {

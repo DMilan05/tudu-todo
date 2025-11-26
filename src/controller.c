@@ -2,19 +2,19 @@
 #include "controller.h"
 #include "view.h"
 #include "model.h"
-#include "io.h"     // <- FONTOS: IO beillesztése
-#include "search.h" // JAVÍTÁS: Hiányzó include a search_init függvényhez
+#include "io.h"
+#include "search.h"
 
+// Globális lista a teendőkhöz.
 GList *todos = NULL;
 
-/* --- Helper függvény a user_data felszabadításához --- */
+// Helper függvény a g_signal_connect_data által átadott widget tömb felszabadításához.
 static void free_widgets_array(gpointer data, GClosure *closure)
 {
     g_free(data);
 }
 
-/* --- Mentés gomb az új feladat ablakban --- */
-// (Ez a függvény rendben volt, változatlan)
+// Eseménykezelő: a "Hozzáadás" ablak "Mentés" gombja.
 static void on_add_save_clicked(GtkButton *button, gpointer user_data)
 {
     gpointer *widgets = (gpointer *)user_data;
@@ -28,8 +28,6 @@ static void on_add_save_clicked(GtkButton *button, gpointer user_data)
     if (!title || g_strcmp0(title, "") == 0)
     {
         GtkAlertDialog *dialog = gtk_alert_dialog_new("A cím nem lehet üres!");
-        const gchar *buttons[] = {"OK", NULL};
-        gtk_alert_dialog_set_buttons(dialog, buttons);
         gtk_alert_dialog_show(dialog, GTK_WINDOW(window));
         g_object_unref(dialog);
         return;
@@ -37,7 +35,7 @@ static void on_add_save_clicked(GtkButton *button, gpointer user_data)
 
     TodoItem *item = g_new0(TodoItem, 1);
     item->title = g_strdup(title);
-    item->description = g_strdup(""); // Nincs leírás mező
+    item->description = g_strdup("");
     item->category = g_strdup("");
     item->priority = priority;
     item->completed = FALSE;
@@ -45,14 +43,10 @@ static void on_add_save_clicked(GtkButton *button, gpointer user_data)
     model_add_item(&todos, item);
     view_refresh_list(todos);
 
-    // Automatikus mentés minden új elem hozzáadása után.
-    io_save_to_file("todos.csv", todos);
-
     gtk_window_close(GTK_WINDOW(window));
 }
 
-/* --- Hozzáadás gomb --- */
-// (Ez a függvény rendben volt, változatlan)
+// Eseménykezelő: a főablak "Hozzáadás" gombja. Megnyitja a hozzáadó ablakot.
 void controller_on_add_clicked(GtkButton *button, gpointer user_data)
 {
     GtkWindow *parent = GTK_WINDOW(user_data);
@@ -67,18 +61,12 @@ void controller_on_add_clicked(GtkButton *button, gpointer user_data)
     widgets[1] = prio_spin;
     widgets[2] = add_window;
 
-    g_signal_connect_data(save_btn,
-                          "clicked",
-                          G_CALLBACK(on_add_save_clicked),
-                          widgets,
-                          free_widgets_array,
-                          0);
+    g_signal_connect_data(save_btn, "clicked", G_CALLBACK(on_add_save_clicked), widgets, free_widgets_array, 0);
 
     gtk_window_present(GTK_WINDOW(add_window));
 }
 
-/* --- Szerkesztés mentése --- */
-// (Ez a függvény rendben volt, változatlan)
+// Eseménykezelő: a "Szerkesztés" ablak "Mentés" gombja.
 static void on_edit_save_clicked(GtkButton *button, gpointer user_data)
 {
     gpointer *widgets = (gpointer *)user_data;
@@ -95,40 +83,32 @@ static void on_edit_save_clicked(GtkButton *button, gpointer user_data)
     if (!title || g_strcmp0(title, "") == 0)
     {
         GtkAlertDialog *dialog = gtk_alert_dialog_new("A cím nem lehet üres!");
-        const gchar *buttons[] = {"OK", NULL};
-        gtk_alert_dialog_set_buttons(dialog, buttons);
         gtk_alert_dialog_show(dialog, GTK_WINDOW(window));
         g_object_unref(dialog);
         return;
     }
 
-    // Frissítjük az elemet a beírt adatokkal.
-    // A "Kész" állapotot is egyszerűen frissítjük, nem törlünk.
     g_free(item->title);
-    g_free(item->description); // Biztonság kedvéért (bár ""-re állítjuk)
+    g_free(item->description);
 
     item->title = g_strdup(title);
-    item->description = g_strdup(""); // Nincs leírás
+    item->description = g_strdup("");
     item->priority = priority;
-    // A jelölőnégyzet állapota alapján beállítjuk a 'completed' mezőt.
     item->completed = done;
 
     view_refresh_list(todos);
     gtk_window_close(GTK_WINDOW(window));
 }
 
-/* --- Szerkesztés gomb --- */
-// (Ez a függvény rendben volt, változatlan)
+// Eseménykezelő: a főablak "Szerkesztés" gombja. Megnyitja a szerkesztő ablakot.
 void controller_on_edit_clicked(GtkButton *button, gpointer user_data)
 {
     GtkWindow *parent = GTK_WINDOW(user_data);
     GtkListBoxRow *row = gtk_list_box_get_selected_row(GTK_LIST_BOX(view_get_list_box()));
-    if (!row)
-        return;
+    if (!row) return;
 
     TodoItem *item = g_object_get_data(G_OBJECT(row), "todo_ptr");
-    if (!item)
-        return;
+    if (!item) return;
 
     GtkWidget *edit_window = view_create_edit_window(parent, item);
     GtkWidget *title_entry = g_object_get_data(G_OBJECT(edit_window), "title_entry");
@@ -143,56 +123,42 @@ void controller_on_edit_clicked(GtkButton *button, gpointer user_data)
     widgets[3] = edit_window;
     widgets[4] = item;
 
-    g_signal_connect_data(save_btn,
-                          "clicked",
-                          G_CALLBACK(on_edit_save_clicked),
-                          widgets,
-                          free_widgets_array,
-                          0);
+    g_signal_connect_data(save_btn, "clicked", G_CALLBACK(on_edit_save_clicked), widgets, free_widgets_array, 0);
 
     gtk_window_present(GTK_WINDOW(edit_window));
 }
 
-/* --- Késznek jelölés --- */
-// (Ez a függvény rendben volt, változatlan)
+// Eseménykezelő: a "Kész" gomb. Megfordítja a kijelölt elem állapotát.
 void controller_on_mark_done_clicked(GtkButton *button, gpointer user_data)
 {
     GtkListBoxRow *row = gtk_list_box_get_selected_row(GTK_LIST_BOX(view_get_list_box()));
-    if (!row)
-        return;
+    if (!row) return;
 
     TodoItem *item = g_object_get_data(G_OBJECT(row), "todo_ptr");
-    if (!item)
-        return;
+    if (!item) return;
 
     item->completed = !item->completed;
     view_refresh_list(todos);
 }
 
-/* --- Törlés --- */
-// (Ez a függvény rendben volt, változatlan)
+// Eseménykezelő: a "Törlés" gomb. Törli a kijelölt elemet.
 void controller_on_delete_clicked(GtkButton *button, gpointer user_data)
 {
     GtkListBoxRow *row = gtk_list_box_get_selected_row(GTK_LIST_BOX(view_get_list_box()));
-    if (!row)
-        return;
+    if (!row) return;
 
     TodoItem *item = g_object_get_data(G_OBJECT(row), "todo_ptr");
-    if (!item)
-        return;
+    if (!item) return;
 
     todos = g_list_remove(todos, item);
     model_free_item(item);
     view_refresh_list(todos);
 }
 
-/* --- Kész elemek törlése --- */
+// Eseménykezelő: a "Kész elemek törlése" gomb.
 void controller_on_delete_completed_clicked(GtkButton *button, gpointer user_data)
 {
     GList *items_to_delete = NULL;
-
-    // 1. Összegyűjtjük a törlendő (kész) elemeket egy külön listába.
-    //    Fontos, hogy ne módosítsuk a `todos` listát, amíg bejárjuk.
     for (GList *l = todos; l != NULL; l = l->next)
     {
         TodoItem *item = (TodoItem *)l->data;
@@ -202,64 +168,94 @@ void controller_on_delete_completed_clicked(GtkButton *button, gpointer user_dat
         }
     }
 
-    // 2. Töröljük az elemeket a fő listából és felszabadítjuk a memóriájukat.
     for (GList *l = items_to_delete; l != NULL; l = l->next)
     {
         todos = g_list_remove(todos, l->data);
         model_free_item((TodoItem *)l->data);
     }
-    g_list_free(items_to_delete); // Felszabadítjuk a segédlistát.
+    g_list_free(items_to_delete);
     view_refresh_list(todos);
 }
 
-/* --- Rendezés --- */
-
-// Összehasonlító függvény a prioritás szerinti rendezéshez (csökkenő sorrend)
+// Rendezési segédfüggvény: prioritás szerint.
 static gint sort_by_priority(gconstpointer a, gconstpointer b)
 {
-    const TodoItem *item_a = (const TodoItem *)a;
-    const TodoItem *item_b = (const TodoItem *)b;
-    // A nagyobb prioritás kerül előre, ezért b-t hasonlítjuk a-hoz.
-    return item_b->priority - item_a->priority;
+    return ((const TodoItem *)b)->priority - ((const TodoItem *)a)->priority;
 }
 
-// Összehasonlító függvény a cím szerinti rendezéshez (ABC sorrend)
+// Rendezési segédfüggvény: cím szerint (ABC).
 static gint sort_by_title(gconstpointer a, gconstpointer b)
 {
-    const TodoItem *item_a = (const TodoItem *)a;
-    const TodoItem *item_b = (const TodoItem *)b;
-    // A g_utf8_collate egy lokalizált, Unicode-biztos összehasonlítást végez.
-    return g_utf8_collate(item_a->title, item_b->title);
+    return g_utf8_collate(((const TodoItem *)a)->title, ((const TodoItem *)b)->title);
 }
 
+// Eseménykezelő: a rendezési legördülő menü megváltozása.
 void controller_on_sort_changed(GtkDropDown *dropdown, GParamSpec *pspec, gpointer user_data)
 {
     guint selected = gtk_drop_down_get_selected(dropdown);
-
-    if (selected == 1) // 1 = "ABC szerint"
+    if (selected == 1)
     {
         todos = g_list_sort(todos, (GCompareFunc)sort_by_title);
     }
-    else if (selected == 2) // 2 = "Prioritás szerint"
+    else if (selected == 2)
     {
         todos = g_list_sort(todos, (GCompareFunc)sort_by_priority);
     }
     view_refresh_list(todos);
 }
 
-/* --- Mentés fájlba --- */
+// Eseménykezelő: a "Mentés" gomb. Elmenti a listát a fájlba.
 void controller_on_save_clicked(GtkButton *button, gpointer user_data)
 {
-    // JAVÍTVA: CSV mentés hívása
     io_save_to_file("todos.csv", todos);
 }
 
-/* --- Inicializálás --- */
+// Callback: a bezárási párbeszédablak válaszát dolgozza fel.
+static void on_close_dialog_response(GObject *source, GAsyncResult *res, gpointer user_data)
+{
+    GtkWindow *window = GTK_WINDOW(user_data);
+    gint choice = gtk_alert_dialog_choose_finish(GTK_ALERT_DIALOG(source), res, NULL);
+
+    switch (choice)
+    {
+    case 0: // Mentés
+        io_save_to_file("todos.csv", todos);
+        gtk_window_destroy(window);
+        break;
+    case 1: // Bezárás mentés nélkül
+        gtk_window_destroy(window);
+        break;
+    case 2: // Mégse
+    default:
+        // Nem történik semmi, az ablak nyitva marad.
+        break;
+    }
+}
+
+// Eseménykezelő: az ablak bezárási kérelme (pl. X gomb).
+gboolean controller_on_close_request(GtkWindow *window, gpointer user_data)
+{
+    G_GNUC_UNUSED gpointer unused_user_data = user_data;
+    GtkAlertDialog *dialog = gtk_alert_dialog_new("Menti a változtatásokat?");
+    const gchar *buttons[] = {"Mentés", "Bezárás mentés nélkül", "Mégse", NULL};
+    gtk_alert_dialog_set_buttons(dialog, buttons);
+
+    // Aszinkron módon jelenítjük meg a párbeszédablakot, és a választ
+    // a 'on_close_dialog_response' callback kezeli.
+    gtk_alert_dialog_choose(dialog, window, NULL, on_close_dialog_response, window);
+    
+    g_object_unref(dialog);
+
+    // TRUE-t adunk vissza, hogy megakadályozzuk az ablak azonnali bezárását.
+    // A bezárást a callback fogja végezni a felhasználó döntése után.
+    return TRUE;
+}
+
+// Inicializálja a controllert.
 void controller_init(GtkWidget *window)
 {
-    // JAVÍTVA: CSV betöltés hívása indításkor
     todos = io_load_from_file("todos.csv");
-    view_refresh_list(todos); // Frissítjük a listát a betöltött adatokkal
+    view_refresh_list(todos);
 
     g_signal_connect(view_get_add_button(), "clicked", G_CALLBACK(controller_on_add_clicked), window);
     g_signal_connect(view_get_edit_button(), "clicked", G_CALLBACK(controller_on_edit_clicked), window);
@@ -269,16 +265,11 @@ void controller_init(GtkWidget *window)
     g_signal_connect(view_get_delete_completed_button(), "clicked", G_CALLBACK(controller_on_delete_completed_clicked), NULL);
     g_signal_connect(view_get_sort_dropdown(), "notify::selected", G_CALLBACK(controller_on_sort_changed), NULL);
 
-    // A keresés inicializálása
     search_init(GTK_SEARCH_ENTRY(view_get_search_entry()), GTK_LIST_BOX(view_get_list_box()));
 }
 
-/* --- Leállítás --- */
-// JAVÍTVA: Új függvény a memória felszabadításához kilépéskor
+// Az alkalmazás leállításakor felszabadítja a 'todos' listát.
 void controller_shutdown(void)
 {
-    // Mielőtt bezárul a program, mentsük el automatikusan
-    io_save_to_file("todos.csv", todos);
-    // És szabadítsuk fel a listát
     model_free_list(todos);
 }
