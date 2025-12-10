@@ -1,0 +1,27 @@
+Alkalmazás elindítása:
+./tudu_todo
+
+
+chmod +x tests/run_tests
+./tests/run_tests
+
+chmod +x tests/run_tests
+make -C tests
+./tests/run_tests
+
+debug információ lekérés, ha hiba van és nem tudni miért:
+gdb --args ./tests/test_main
+
+make -C tests run
+./tests/test_controller
+
+!!!!!
+make -C tests clean
+make -C tests
+./tests/run_tests
+
+!!!!!!
+ez a fő tesztelés futtatás:
+make -C tests clean && make -C tests
+xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' ./tests/run_tests
+

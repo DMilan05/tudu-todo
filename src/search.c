@@ -50,3 +50,9 @@ void search_init(GtkSearchEntry *search_entry, GtkListBox *list_box)
 {
     g_signal_connect(search_entry, "search-changed", G_CALLBACK(on_search_changed), list_box);
 }
+
+/* Public wrapper, hogy a tesztek elérhessék a belső filter függvényt */
+gboolean search_filter_wrapper(GtkListBoxRow *row, gpointer user_data)
+{
+    return search_filter_func(row, user_data);
+}

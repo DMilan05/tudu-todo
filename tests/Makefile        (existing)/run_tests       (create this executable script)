@@ -1,0 +1,3 @@
+#!/bin/bash
+gcc -o test_hello test_hello.c
+./test_hello

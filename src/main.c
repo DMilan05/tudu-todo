@@ -32,15 +32,22 @@ static void load_css(void)
 // Az alkalmazás "activate" eseménykezelője. Létrehozza a főablakot.
 static void on_app_activate(GtkApplication *app, gpointer user_data)
 {
-    load_css();
+    /* csak ha van elérhető display, töltsük a CSS-t (tesztek headless környezetben megússzák) */
+    if (gdk_display_get_default())
+        load_css();
 
     GtkWidget *window = view_create_main_window(app);
     controller_init(window);
 
-    // Az ablak bezárási kérelmének csatlakoztatása a controllerhez.
-    g_signal_connect(window, "close-request", G_CALLBACK(controller_on_close_request), NULL);
+    /* csak érvényes GObject-re kötünk jelet */
+    if (G_IS_OBJECT(window)) {
+        g_signal_connect(window, "close-request", G_CALLBACK(controller_on_close_request), NULL);
+    }
 
-    gtk_window_present(GTK_WINDOW(window));
+    /* csak ha valódi GtkWindow, mutassuk be */
+    if (GTK_IS_WINDOW(window)) {
+        gtk_window_present(GTK_WINDOW(window));
+    }
 }
 
 // Az alkalmazás "shutdown" eseménykezelője. Felszabadítja az erőforrásokat.

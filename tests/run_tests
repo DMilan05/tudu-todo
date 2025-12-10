@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+cd "$(dirname "$0")"
+
+# Build tests
+make
+
+# Run only executables named test_* or *_test (avoid running run_tests)
+for f in ./test_* ./*_test; do
+  if [ -f "$f" ] && [ -x "$f" ]; then
+    echo "Running $(basename "$f")"
+    "./$(basename "$f")"
+  fi
+done
